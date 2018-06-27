@@ -1,5 +1,7 @@
 import java.util.Scanner;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 public class Dock extends Thing{
 	private Ship ship;
 
@@ -17,5 +19,13 @@ public class Dock extends Thing{
 			string += "  Ship: " + ship.toString();
 		
 		return string;
+	}
+
+	public DefaultMutableTreeNode createTree() {
+		DefaultMutableTreeNode dockNode = new DefaultMutableTreeNode(name);
+		
+		dockNode.add(ship.createTree());
+		
+		return dockNode;
 	}
 }

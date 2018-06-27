@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 public class SeaPort extends Thing{
 	private ArrayList <Dock> docks = new ArrayList <Dock>();
 	private ArrayList <Ship> queue = new ArrayList <Ship>();
@@ -124,5 +126,47 @@ public class SeaPort extends Thing{
 		}
 		
 		return results;
+	}
+
+	public DefaultMutableTreeNode createTree() {
+		DefaultMutableTreeNode portNode = new DefaultMutableTreeNode(name);
+		
+		// add docks
+		DefaultMutableTreeNode dockTop = new DefaultMutableTreeNode("Docks");
+		for(Dock dock : docks) {
+			DefaultMutableTreeNode dockTree = dock.createTree();
+			dockTop.add(dockTree);
+		}
+		portNode.add(dockTop);
+
+		
+		// add ships in the queue
+		DefaultMutableTreeNode queueTop = new DefaultMutableTreeNode("Queue");
+		for(Ship ship : queue) {
+			DefaultMutableTreeNode shipTree = ship.createTree();
+			queueTop.add(shipTree);
+		}
+		portNode.add(queueTop);
+		
+		
+		// add ships from the list of ships
+		DefaultMutableTreeNode shipsTop = new DefaultMutableTreeNode("Ships");
+		for(Ship ship : ships) {
+			DefaultMutableTreeNode shipTree = ship.createTree();
+			shipsTop.add(shipTree);
+		}
+		portNode.add(shipsTop);
+		
+		
+		// add people 
+		DefaultMutableTreeNode peopleTop = new DefaultMutableTreeNode("People");
+		for(Person person : persons) {
+			DefaultMutableTreeNode personTree = person.createTree();
+			peopleTop.add(personTree);
+		}
+		
+		portNode.add(peopleTop);
+		
+		return portNode;
 	}
 }

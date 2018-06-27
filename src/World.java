@@ -3,6 +3,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 public class World extends Thing{
 	private PortTime time;
 	private ArrayList<SeaPort> ports = new ArrayList<SeaPort>();
@@ -145,5 +147,12 @@ public class World extends Thing{
         			break;
         		}
         }
+	}
+
+	public void createTree(DefaultMutableTreeNode top) {
+		for (SeaPort port : ports) {
+			DefaultMutableTreeNode portNode = port.createTree();
+			top.add(portNode);
+		}
 	}
 }

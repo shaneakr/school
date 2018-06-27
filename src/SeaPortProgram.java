@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Scanner; 
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 
 public class SeaPortProgram extends JFrame implements ActionListener{
 	
@@ -38,6 +40,9 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 	JPanel searchSelectPanel = new JPanel();
 	JLabel searchLabel = new JLabel("Search");
 	JPanel searchDisplayPanel = new JPanel();
+	JPanel treeParentPanel = new JPanel(new BorderLayout());
+	JScrollPane treePanel;
+	JPanel jobStatusPanel = new JPanel();
 	JTextArea searchTextArea = new JTextArea(20,40);
 	JButton searchButton = new JButton("Search");
 	String[] choices = new String[] {"Name", "Index","Skill"};
@@ -56,6 +61,9 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 	JButton sortButton = new JButton("Sort");
 	JTextField searchTextBox = new JTextField(20); 
 	String fileName;
+	
+	JTree tree;
+	DefaultMutableTreeNode top; 
 
 	
 	public SeaPortProgram() {
@@ -69,6 +77,8 @@ public class SeaPortProgram extends JFrame implements ActionListener{
         add(tabPane);
     		tabPane.add("Open", openPanel);
         tabPane.add("Search", searchPanel);
+        tabPane.add("Tree",treeParentPanel);
+        tabPane.add("Job Status",jobStatusPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         //open tab
@@ -171,6 +181,15 @@ public class SeaPortProgram extends JFrame implements ActionListener{
         searchSelectPanel.add(searchButton);
         searchDisplayPanel.add(searchTextArea);
         searchButton.addActionListener(this);
+        
+        // Tree Panel
+        top = new DefaultMutableTreeNode("The World");
+        tree = new JTree(top);
+        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        treePanel = new JScrollPane(tree);
+        
+        treeParentPanel.add(BorderLayout.CENTER,treePanel);
+        
         setVisible(true);
 	}
 
@@ -319,8 +338,13 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 		}
 	}
 	
+	// This is the function that redraws the GUI
 	private void printResults() {
 		openTextArea.setText(world.toString());
+
+		top.removeAllChildren();
+		world.createTree(top);
+        tree.updateUI();
 	}
 	
 	// text: the text the user entered

@@ -1,5 +1,7 @@
 import java.util.Scanner;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 public class Person extends Thing{
 	private String skill;
 	
@@ -17,5 +19,10 @@ public class Person extends Thing{
 
 	public String getSkill() {
 		return skill;
+	}
+
+	public DefaultMutableTreeNode createTree() {
+		DefaultMutableTreeNode personNode = new DefaultMutableTreeNode(name);
+		return personNode;
 	}
 }

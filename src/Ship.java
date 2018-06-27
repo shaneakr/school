@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 public class Ship extends Thing{
 	private PortTime arrivalTime, dockTime;
 	private double draft, length, weight, width;
@@ -40,7 +42,13 @@ public class Ship extends Thing{
 		return draft;
 	}
 
-
+	public DefaultMutableTreeNode createTree() {
+		DefaultMutableTreeNode shipNode = new DefaultMutableTreeNode(name);
+		
+		
+		
+		return shipNode;
+	} 
 }
 
 
