@@ -1,3 +1,9 @@
+/**
+@filename: SortByWeightComparator.java
+@date: 7/1/18
+@author skingroberson
+@purpose: Sorts ships by Weight
+**/
 import java.util.Comparator;
 
 public class SortByWeightComparator  implements Comparator<Ship> {

@@ -1,3 +1,9 @@
+/**
+@filename: Thing.java
+@date: 7/1/18
+@author skingroberson
+@purpose: defines a Thing
+**/
 import java.util.Scanner; 
 public class Thing implements Comparable<Thing>{
 	

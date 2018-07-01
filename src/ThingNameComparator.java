@@ -1,3 +1,9 @@
+/**
+@filename: ThingNameComparator.java
+@date: 7/1/18
+@author skingroberson
+@purpose: sorts things by name
+**/
 import java.util.Comparator;
 public class ThingNameComparator implements Comparator <Thing>{
 

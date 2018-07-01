@@ -1,3 +1,9 @@
+/**
+@filename: Person.java
+@date: 7/1/18
+@author skingroberson
+@purpose: Defines Person class
+**/
 import java.util.Scanner;
 
 import javax.swing.tree.DefaultMutableTreeNode;

@@ -1,4 +1,9 @@
-
+/**
+@filename: SeaPortProgram.java
+@date: 7/1/18
+@author skingroberson
+@purpose: GUI and main for SeaPort
+**/
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -16,6 +21,8 @@ import java.util.Map;
 import java.util.Scanner; 
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -42,7 +49,9 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 	JPanel searchDisplayPanel = new JPanel();
 	JPanel treeParentPanel = new JPanel(new BorderLayout());
 	JScrollPane treePanel;
-	JPanel jobStatusPanel = new JPanel();
+	JPanel jobStatusPanel = new JPanel(new BorderLayout());
+	JTable table; 
+	JScrollPane jobScrollPanel;
 	JTextArea searchTextArea = new JTextArea(20,40);
 	JButton searchButton = new JButton("Search");
 	String[] choices = new String[] {"Name", "Index","Skill"};
@@ -160,7 +169,7 @@ public class SeaPortProgram extends JFrame implements ActionListener{
         });   
             
         //bottom pane - display
-        openPanel.add(openDisplayPanel, BorderLayout.CENTER);
+        openPanel.add(openDisplayPanel, BorderLayout.CENTER); 
         openDisplayPanel.add(scrollPane, BorderLayout.CENTER);
         openFileButton.addActionListener(this);
         //bottom pane - text area
@@ -189,6 +198,34 @@ public class SeaPortProgram extends JFrame implements ActionListener{
         treePanel = new JScrollPane(tree);
         
         treeParentPanel.add(BorderLayout.CENTER,treePanel);
+        
+        // Job status panel
+        JobTableModel tableModel = new JobTableModel();
+        table = new JTable(tableModel);
+        table.getColumn("Progress").setCellRenderer(new ProgressCellRender());
+        
+        Action cancel = new AbstractAction()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                JTable table = (JTable)e.getSource();
+                int modelRow = Integer.valueOf( e.getActionCommand() );
+                JobTableModel tableModel = (JobTableModel)table.getModel();
+                Job job = tableModel.getJobAtRow(modelRow);
+                job.cancel();
+                
+            }
+        };
+         
+        ButtonColumn buttonColumn = new ButtonColumn(table, cancel, 6);
+
+        
+        jobScrollPanel = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+        
+        jobScrollPanel.setBackground(new Color(100, 0, 0));
+        
+        jobStatusPanel.add(BorderLayout.CENTER,jobScrollPanel);
         
         setVisible(true);
 	}
@@ -245,21 +282,27 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 		//create hashmaps shipByIndex and dockByIndex
 		HashMap <Integer, SeaPort> portByIndex = new HashMap<Integer, SeaPort>();
 		HashMap <Integer, Dock> dockByIndex = new HashMap<Integer, Dock>();
+		HashMap <Integer, Ship> shipByIndex = new HashMap<Integer, Ship>();
 		
 		while (scanner.hasNext()) {
 		    String line = scanner.nextLine();
 		    listLines.add(line);
 		}
-		//pass both hashmaps into parse line 
+		//pass all 3 hashmaps into parse line 
 		for (String line : listLines) {
-			parseLine(line, portByIndex, dockByIndex);
+			parseLine(line, portByIndex, dockByIndex,shipByIndex);
+		}
+		
+		for (Dock dock : dockByIndex.values()) {
+			dock.dockShip();
 		}
 	}
 	//populate hashmap
 	//add new ports and dock to respective hashmaps
 	
 	//use the hashmaps instead of getDock and getPort
-	private void parseLine(String line, HashMap <Integer, SeaPort> portByIndex, HashMap <Integer, Dock> dockByIndex) {
+	private void parseLine(String line, HashMap <Integer, SeaPort> portByIndex, HashMap <Integer, Dock> dockByIndex,
+			HashMap <Integer, Ship> shipByIndex) {
 		//System.out.println("Processing >" + line + "<");
 
 		Scanner scanner = new Scanner(line);
@@ -288,6 +331,7 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 			//Create a pship
 			PassangerShip pass = new PassangerShip(scanner);
 			int pParentIndex = pass.getParent();
+			shipByIndex.put(pass.getIndex(), pass);
 			SeaPort portForPassShip = portByIndex.get(pParentIndex);
 			if(portForPassShip != null) {
 				portForPassShip.addShipToQue(pass);
@@ -307,6 +351,8 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 			CargoShip cargo = new CargoShip(scanner);
 			//find the dock or the port
 			int cParentIndex = cargo.getParent();
+			shipByIndex.put(cargo.getIndex(), cargo);
+
 			SeaPort portForCargoShip = portByIndex.get(cParentIndex);
 			if (portForCargoShip != null) {
 				portForCargoShip.addShipToQue(cargo);
@@ -329,7 +375,13 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 			break;
 		
 		case "job":
-			//optional until project 3
+			Job job = new Job(scanner, this);
+			Ship shipForJob = shipByIndex.get(job.getParent());
+			if (shipForJob == null) {
+				System.out.println("Invalid Job! Job parent must reference a ship, but this job does not.");
+			} else {
+				shipForJob.addJob(job);
+			}
 			break;
 		
 		default:
@@ -340,11 +392,18 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 	
 	// This is the function that redraws the GUI
 	private void printResults() {
+		// print into text area
 		openTextArea.setText(world.toString());
 
+		// build tree
 		top.removeAllChildren();
 		world.createTree(top);
         tree.updateUI();
+        
+        // build job table
+        JobTableModel tableModel = (JobTableModel) table.getModel();
+        ArrayList<RowData> rows = world.getJobTableRows();
+        tableModel.setRowData(rows);
 	}
 	
 	// text: the text the user entered
@@ -368,6 +427,23 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 		}
 		
 	}
+	
+	public void refreshTable() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+		        JobTableModel tableModel = (JobTableModel) table.getModel();
+		        ArrayList<RowData> rows = world.getJobTableRows();
+		        tableModel.setRowData(rows);
+	        }
+	    });
+	}
+	
+	public void jobDone() {
+		world.moveShips();
+		refreshTable();
+	}
+
 	protected void displayAlert(String msg){
         JOptionPane.showMessageDialog(
                 null,

@@ -1,3 +1,9 @@
+/**
+@filename: World.java
+@date: 7/1/18
+@author skingroberson
+@purpose: Defines the World
+**/
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -153,6 +159,22 @@ public class World extends Thing{
 		for (SeaPort port : ports) {
 			DefaultMutableTreeNode portNode = port.createTree();
 			top.add(portNode);
+		}
+	}
+
+	public ArrayList<RowData> getJobTableRows() {
+		ArrayList<RowData> tableRows = new ArrayList<RowData>();
+		
+		for (SeaPort port : ports) {
+			port.addJobTableRows(tableRows);
+		}
+		
+		return tableRows;
+	}
+
+	public void moveShips() {
+		for (SeaPort port : ports) {
+			port.moveShips();
 		}
 	}
 }

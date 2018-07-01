@@ -1,3 +1,9 @@
+/**
+@filename: SortByWidthComparator.java
+@date: 7/1/18
+@author skingroberson
+@purpose: sorts ships by width
+**/
 import java.util.Comparator;
 
 public class SortByWidthComparator  implements Comparator<Ship> {

@@ -1,3 +1,10 @@
+/**
+@filename: SortByLengthComparator.java
+@date: 7/1/18
+@author skingroberson
+@purpose: Sorts ships by Length
+**/
+
 import java.util.Comparator;
 
 public class SortByLengthComparator  implements Comparator<Ship> {

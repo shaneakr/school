@@ -1,3 +1,10 @@
+/**
+@filename: Dock.java
+@date: 7/1/18
+@author skingroberson
+@purpose: functionality for Dock
+**/
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -27,5 +34,23 @@ public class Dock extends Thing{
 		dockNode.add(ship.createTree());
 		
 		return dockNode;
+	}
+
+	public void addJobTableRows(String portName, ArrayList<RowData> tableRows) {
+		ship.addJobTableRows(portName, name, tableRows);
+	}
+
+	public void dockShip() {
+		if (ship != null) {
+			ship.dock();
+		}
+	}
+
+	public boolean readyForNewShip() {
+		return (ship != null) && ship.areAllJobsDone();
+	}
+
+	public Ship getShip() {
+		return ship;
 	}
 }

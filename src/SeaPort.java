@@ -1,4 +1,11 @@
+/**
+@filename: Seaport.java
+@date: 7/1/18
+@author skingroberson
+@purpose: Defines functionality for a SeaPort 
+**/
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -22,7 +29,9 @@ public class SeaPort extends Thing{
 	}
 
 	public void addShipToQue(Ship ship) {
-		queue.add(ship);
+		synchronized(this) {
+			queue.add(ship);
+		}
 		addShip(ship);
 	}
 	
@@ -51,8 +60,10 @@ public class SeaPort extends Thing{
 		}
 		
 		string += "\n\n--- List of all ships in que:\n";
-		for (Ship ship : queue) {
-			string += "\n  > " + ship.toString();
+		synchronized(this) {
+			for (Ship ship : queue) {
+				string += "\n  > " + ship.toString();
+			}
 		}
 		
 		string += "\n\n--- List of all ships:\n";
@@ -142,9 +153,11 @@ public class SeaPort extends Thing{
 		
 		// add ships in the queue
 		DefaultMutableTreeNode queueTop = new DefaultMutableTreeNode("Queue");
-		for(Ship ship : queue) {
-			DefaultMutableTreeNode shipTree = ship.createTree();
-			queueTop.add(shipTree);
+		synchronized(this) {
+			for(Ship ship : queue) {
+				DefaultMutableTreeNode shipTree = ship.createTree();
+				queueTop.add(shipTree);
+			}
 		}
 		portNode.add(queueTop);
 		
@@ -168,5 +181,36 @@ public class SeaPort extends Thing{
 		portNode.add(peopleTop);
 		
 		return portNode;
+	}
+
+	public void addJobTableRows(ArrayList<RowData> tableRows) {
+		HashMap<Integer, Dock> isShipDocked = new HashMap<Integer, Dock>(); 
+
+		for (Dock dock : docks) {
+			isShipDocked.put(dock.getShip().getIndex(), dock);
+		}
+		
+		for (Ship ship : ships) {
+			Dock dock = isShipDocked.get(ship.getIndex());
+			
+			if (dock != null) {
+				ship.addJobTableRows(name, dock.getName(), tableRows);
+			}
+			else {
+				ship.addJobTableRows(name, "--", tableRows);
+			}
+		}
+	}
+
+	public void moveShips() {
+		for (Dock dock : docks) {
+			synchronized(this) {
+				if (queue.size() > 0 && dock.readyForNewShip()) {
+					Ship nextShip = queue.remove(0);
+					dock	.setShip(nextShip);
+					dock.dockShip();
+				}
+			}
+		}
 	}
 }

@@ -1,3 +1,9 @@
+/**
+@filename: Ship.java
+@date: 7/1/18
+@author skingroberson
+@purpose: Defines Ship
+**/
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -45,9 +51,40 @@ public class Ship extends Thing{
 	public DefaultMutableTreeNode createTree() {
 		DefaultMutableTreeNode shipNode = new DefaultMutableTreeNode(name);
 		
-		
+		for(Job job : jobs) {
+			DefaultMutableTreeNode jobNode = new DefaultMutableTreeNode(job.getName());
+			shipNode.add(jobNode);
+		}
 		
 		return shipNode;
+	}
+
+	public void addJob(Job job) {
+		jobs.add(job);
+	}
+
+	public void addJobTableRows(String portName, String dockName, ArrayList<RowData> tableRows) {
+		for (Job job : jobs) {
+			tableRows.add(new RowData(portName, dockName, name, job));
+		}
+	}
+
+	public void dock() {
+		for (Job job : jobs) {
+			job.dock();
+		}
+	}
+
+	public boolean areAllJobsDone() {
+		boolean done = true;
+		
+		for (Job job : jobs) {
+			if (!job.isComplete() ) {
+				done = false;
+			}
+		}
+		
+		return done;
 	} 
 }
 

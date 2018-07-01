@@ -1,3 +1,9 @@
+/**
+@filename: PassangerShip.java
+@date: 7/1/18
+@author skingroberson
+@purpose: Defines Passenger ship
+**/
 import java.util.Scanner;
 
 public class PassangerShip extends Ship{

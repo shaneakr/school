@@ -1,3 +1,9 @@
+/**
+@filename: SortByDraftComparator.java
+@date: 7/1/18
+@author skingroberson
+@purpose: Sort ships by Draft
+**/
 import java.util.Comparator;
 
 public class SortByDraftComparator  implements Comparator<Ship> {
