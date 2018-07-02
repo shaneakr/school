@@ -204,6 +204,7 @@ public class SeaPortProgram extends JFrame implements ActionListener{
         table = new JTable(tableModel);
         table.getColumn("Progress").setCellRenderer(new ProgressCellRender());
         
+        // cancel buttons
         Action cancel = new AbstractAction()
         {
             public void actionPerformed(ActionEvent e)
@@ -217,7 +218,23 @@ public class SeaPortProgram extends JFrame implements ActionListener{
             }
         };
          
-        ButtonColumn buttonColumn = new ButtonColumn(table, cancel, 6);
+        new ButtonColumn(table, cancel, 6);
+
+        // pause buttons
+        Action pause = new AbstractAction()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                JTable table = (JTable)e.getSource();
+                int modelRow = Integer.valueOf( e.getActionCommand() );
+                JobTableModel tableModel = (JobTableModel)table.getModel();
+                Job job = tableModel.getJobAtRow(modelRow);
+                job.togglePause();
+                
+            }
+        };
+         
+        new ButtonColumn(table, pause, 7);
 
         
         jobScrollPanel = new JScrollPane(table);
@@ -404,6 +421,9 @@ public class SeaPortProgram extends JFrame implements ActionListener{
         JobTableModel tableModel = (JobTableModel) table.getModel();
         ArrayList<RowData> rows = world.getJobTableRows();
         tableModel.setRowData(rows);
+        
+        jobScrollPanel.revalidate();
+        jobScrollPanel.repaint();
 	}
 	
 	// text: the text the user entered

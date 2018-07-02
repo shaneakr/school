@@ -55,6 +55,14 @@ public class Job extends Thing implements Runnable {
 		isCanceled = true;
 		status = "Canceled";
 	}
+	
+	public void togglePause() {
+		if (status == "Paused") {
+			status = "Running";
+		} else if (status == "Running") {
+			status = "Paused";
+		}
+	}
 
 	@Override
 	public void run() {

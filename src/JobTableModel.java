@@ -23,7 +23,7 @@ public class JobTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 7;
+        return 8;
     }
 
     @Override
@@ -51,6 +51,9 @@ public class JobTableModel extends AbstractTableModel {
             case 6:
                 name = "Cancel";
                 break;
+            case 7:
+            		name = "Pause";
+            		break;
         }
         return name;
     }
@@ -81,6 +84,14 @@ public class JobTableModel extends AbstractTableModel {
             case 6:
                 value = "Cancel";
                 break;
+            case 7:
+                String status = rowData.job.getStatus();
+                if(status == "Paused") {
+            			value = "Resume";
+                } else {
+                		value = "Paused";
+                }
+                break;
         }
         return value;
     }
@@ -91,7 +102,7 @@ public class JobTableModel extends AbstractTableModel {
     }
 	
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == 6;
+		return columnIndex == 6 || columnIndex == 7;
 	}
 
 	public Job getJobAtRow(int rowIndex) {
