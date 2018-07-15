@@ -13,6 +13,7 @@ public class Job extends Thing implements Runnable {
 	private double timeSpent = 0.0;
 	private String status = "Waiting";
 	private boolean isCanceled = false;
+	private Person person;
 	private SeaPortProgram gui;
 	
 	public Job(Scanner scanner, SeaPortProgram gui) {
@@ -27,7 +28,7 @@ public class Job extends Thing implements Runnable {
 		
 		this.gui = gui;
 		
-	    new Thread (this).start();
+	    new Thread(this, name).start();
 	}
 	
 	public String toString() {
@@ -47,7 +48,8 @@ public class Job extends Thing implements Runnable {
 		return (getProgress() >= 1.0) || isCanceled;
 	}
 	
-	public void dock() {
+	public void dock(Person person) {
+		this.person = person;
 		status = "Running";
 	}
 	
@@ -84,6 +86,25 @@ public class Job extends Thing implements Runnable {
 		} else {
 			status = "Done!";
 		}
+		
+		if (person != null) {
+			person.setAvailable();
+		}
+		
+		// remove job's reference to person
+		person = null;
+				
 		gui.jobDone();
+	}
+
+	public ArrayList<String> getSkills() {
+		return requirements;
+	}
+	
+	public String getPersonName() {
+		if (person != null) {
+			return person.getName();
+		}
+		return "--";
 	}
 }

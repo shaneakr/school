@@ -204,13 +204,59 @@ public class SeaPort extends Thing{
 
 	public void moveShips() {
 		for (Dock dock : docks) {
+			// make sure any waiting jobs look again for matching person
+			dock.findPeopleForJobs(this);
+
 			synchronized(this) {
+				// maybe need to move a new ship into the dock
 				if (queue.size() > 0 && dock.readyForNewShip()) {
 					Ship nextShip = queue.remove(0);
 					dock	.setShip(nextShip);
-					dock.dockShip();
+					dock.findPeopleForJobs(this);
 				}
 			}
 		}
+	}
+	
+	// this function needs a lock
+	// this finds a person with the skill who isn't busy
+	// this needs to mark the person as busy
+	public synchronized Person findPersonForJob(Job job) {
+		//look in persons
+		for(Person person : persons) {
+			//check if skills equal skill
+			for (String skill : job.getSkills()) {
+				if(person.getSkill().equals(skill)) {
+					//check if person is busy
+					if(!person.isBusy()) {
+						//mark person busy
+						person.setJob(job);
+						//return person
+						return person;	
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public void addPeopleTableRows(ArrayList<Object[]> pTableRows) {
+		for (Person person : persons) {
+			Object[] row = {name, person.getName(), person.getSkill(), person.getJobName()};
+			pTableRows.add(row);
+		}
+	}
+
+	public boolean noPeopleWithSkillForJob(Job job) {
+		//look in persons
+		for(Person person : persons) {
+			//check if skills equal skill
+			for (String skill : job.getSkills()) {
+				if(person.getSkill().equals(skill)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

@@ -177,4 +177,14 @@ public class World extends Thing{
 			port.moveShips();
 		}
 	}
+
+	public ArrayList<Object[]> getPeopleTableRows() {
+		ArrayList<Object[]> pTableRows = new ArrayList<Object[]>();
+		
+		for (SeaPort port: ports) {
+			port.addPeopleTableRows(pTableRows);
+		}
+		
+		return pTableRows;
+	}
 }

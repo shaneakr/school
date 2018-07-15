@@ -49,9 +49,16 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 	JPanel searchDisplayPanel = new JPanel();
 	JPanel treeParentPanel = new JPanel(new BorderLayout());
 	JScrollPane treePanel;
+	
+	// job tab
 	JPanel jobStatusPanel = new JPanel(new BorderLayout());
-	JTable table; 
 	JScrollPane jobScrollPanel;
+	JTable table; 
+
+	// people tab
+	JPanel personStatusPanel = new JPanel(new BorderLayout());
+	JScrollPane personScrollPanel;
+	JTable personTable;
 	JTextArea searchTextArea = new JTextArea(20,40);
 	JButton searchButton = new JButton("Search");
 	String[] choices = new String[] {"Name", "Index","Skill"};
@@ -88,6 +95,7 @@ public class SeaPortProgram extends JFrame implements ActionListener{
         tabPane.add("Search", searchPanel);
         tabPane.add("Tree",treeParentPanel);
         tabPane.add("Job Status",jobStatusPanel);
+        tabPane.add("People",personStatusPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         //open tab
@@ -203,7 +211,37 @@ public class SeaPortProgram extends JFrame implements ActionListener{
         JobTableModel tableModel = new JobTableModel();
         table = new JTable(tableModel);
         table.getColumn("Progress").setCellRenderer(new ProgressCellRender());
+        createJobTableButtonColumns(table);
         
+        jobScrollPanel = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+        
+        jobScrollPanel.setBackground(new Color(100, 0, 0));
+        jobStatusPanel.add(BorderLayout.CENTER,jobScrollPanel);
+        
+        
+        // Person Panel
+	    	Object[][] peopleData = {};
+	    	String[] pColumnNames = {"Port", "Person", "Skill", "Job"};
+        TableModel personTableModel = new DefaultTableModel(peopleData, pColumnNames);
+        personTable = new JTable(personTableModel);
+
+        personScrollPanel = new JScrollPane(personTable);
+        personTable.setFillsViewportHeight(true);
+        personScrollPanel.setBackground(new Color(100, 0, 0));
+        personStatusPanel.add(BorderLayout.CENTER,personScrollPanel);
+        
+        
+        setVisible(true);
+	}
+
+	public static void main(String[] args) {
+		SeaPortProgram program = new SeaPortProgram();
+		
+	}
+
+	
+	private void createJobTableButtonColumns(JTable table) {
         // cancel buttons
         Action cancel = new AbstractAction()
         {
@@ -218,7 +256,7 @@ public class SeaPortProgram extends JFrame implements ActionListener{
             }
         };
          
-        new ButtonColumn(table, cancel, 6);
+        new ButtonColumn(table, cancel, 7);
 
         // pause buttons
         Action pause = new AbstractAction()
@@ -234,24 +272,9 @@ public class SeaPortProgram extends JFrame implements ActionListener{
             }
         };
          
-        new ButtonColumn(table, pause, 7);
-
-        
-        jobScrollPanel = new JScrollPane(table);
-        table.setFillsViewportHeight(true);
-        
-        jobScrollPanel.setBackground(new Color(100, 0, 0));
-        
-        jobStatusPanel.add(BorderLayout.CENTER,jobScrollPanel);
-        
-        setVisible(true);
+        new ButtonColumn(table, pause, 8);
 	}
-
-	public static void main(String[] args) {
-		SeaPortProgram program = new SeaPortProgram();
-		
-	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String com = e.getActionCommand();
@@ -311,7 +334,8 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 		}
 		
 		for (Dock dock : dockByIndex.values()) {
-			dock.dockShip();
+			SeaPort port = portByIndex.get(dock.getParent());
+			dock.findPeopleForJobs(port);
 		}
 	}
 	//populate hashmap
@@ -424,6 +448,19 @@ public class SeaPortProgram extends JFrame implements ActionListener{
         
         jobScrollPanel.revalidate();
         jobScrollPanel.repaint();
+        
+        //build person table
+        DefaultTableModel personTableModel = (DefaultTableModel) personTable.getModel();
+        ArrayList <Object[]> peopleRows = world.getPeopleTableRows();
+        personTableModel.setRowCount(0);
+        
+        for (Object[] peopleTableRow : peopleRows) {
+            personTableModel.addRow(peopleTableRow);
+        }
+
+        personScrollPanel.revalidate();
+        personScrollPanel.repaint();
+
 	}
 	
 	// text: the text the user entered
@@ -452,9 +489,7 @@ public class SeaPortProgram extends JFrame implements ActionListener{
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-		        JobTableModel tableModel = (JobTableModel) table.getModel();
-		        ArrayList<RowData> rows = world.getJobTableRows();
-		        tableModel.setRowData(rows);
+		        printResults();
 	        }
 	    });
 	}

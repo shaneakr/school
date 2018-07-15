@@ -69,9 +69,27 @@ public class Ship extends Thing{
 		}
 	}
 
-	public void dock() {
+	public void findPeopleForJobs(SeaPort port) {
 		for (Job job : jobs) {
-			job.dock();
+			// if the job is not canceled or done
+			String status = job.getStatus();
+			if (status.equals("Waiting")) {
+				
+				// if there are no people in the port at all with the required skill
+				if (port.noPeopleWithSkillForJob(job)) {
+					// cancel the job
+					job.cancel();
+				}
+				
+				// find an available person with the required skill
+				Person person = port.findPersonForJob(job);
+				
+				// if we find a person
+				if (person != null) {
+					// start the job
+					job.dock(person);
+				}
+			}
 		}
 	}
 
@@ -85,7 +103,7 @@ public class Ship extends Thing{
 		}
 		
 		return done;
-	} 
+	}
 }
 
 

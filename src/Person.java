@@ -10,6 +10,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class Person extends Thing{
 	private String skill;
+	private Job job;
 	
 	public Person(Scanner scanner) {
 		super(scanner);
@@ -30,5 +31,24 @@ public class Person extends Thing{
 	public DefaultMutableTreeNode createTree() {
 		DefaultMutableTreeNode personNode = new DefaultMutableTreeNode(name);
 		return personNode;
+	}
+
+	public boolean isBusy() {
+		return job != null;
+	}
+
+	public void setJob(Job job) {
+		this.job = job;
+	}
+
+	public String getJobName() {
+		if (job != null) {
+			return job.getName();
+		}
+		return "--";
+	}
+
+	public void setAvailable() {
+		job = null;
 	}
 }

@@ -40,9 +40,9 @@ public class Dock extends Thing{
 		ship.addJobTableRows(portName, name, tableRows);
 	}
 
-	public void dockShip() {
+	public void findPeopleForJobs(SeaPort port) {
 		if (ship != null) {
-			ship.dock();
+			ship.findPeopleForJobs(port);
 		}
 	}
 

@@ -23,7 +23,7 @@ public class JobTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 8;
+        return 9;
     }
 
     @Override
@@ -43,15 +43,18 @@ public class JobTableModel extends AbstractTableModel {
                 name = "Job";
                 break;
             case 4:
+            		name = "Person";
+            		break;
+            case 5:
                 name = "Progress";
                 break;
-            case 5:
+            case 6:
                 name = "Status";
                 break;
-            case 6:
+            case 7:
                 name = "Cancel";
                 break;
-            case 7:
+            case 8:
             		name = "Pause";
             		break;
         }
@@ -76,15 +79,18 @@ public class JobTableModel extends AbstractTableModel {
                 value = rowData.job.getName();
                 break;
             case 4:
+            		value = rowData.personName;
+            		break;
+            case 5:
                 value = rowData.job.getProgress();
                 break;
-            case 5:
+            case 6:
                 value = rowData.job.getStatus();
                 break;
-            case 6:
+            case 7:
                 value = "Cancel";
                 break;
-            case 7:
+            case 8:
                 String status = rowData.job.getStatus();
                 if(status == "Paused") {
             			value = "Resume";
@@ -102,7 +108,7 @@ public class JobTableModel extends AbstractTableModel {
     }
 	
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == 6 || columnIndex == 7;
+		return columnIndex == 7 || columnIndex == 8;
 	}
 
 	public Job getJobAtRow(int rowIndex) {
